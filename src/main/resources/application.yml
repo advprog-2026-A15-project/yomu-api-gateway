@@ -40,3 +40,32 @@ spring:
           uri: http://localhost:8084
           predicates:
             - Path=/api/forum/**
+
+---
+spring:
+  config:
+    activate:
+      on-profile: docker
+  cloud:
+    gateway:
+      routes:
+        - id: service-auth
+          uri: http://service-auth:8081
+          predicates:
+            - Path=/api/auth/**
+        - id: service-learning
+          uri: http://service-learning:8082
+          predicates:
+            - Path=/api/learning/**
+        - id: service-achievements
+          uri: http://service-achievements:8083
+          predicates:
+            - Path=/api/achievements/**
+        - id: service-clan
+          uri: http://service-clan:8085
+          predicates:
+            - Path=/api/clan/**
+        - id: service-forum
+          uri: http://service-forum:8084
+          predicates:
+            - Path=/api/forum/**
