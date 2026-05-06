@@ -1,0 +1,41 @@
+# Gradle build / wrapper
+.gradle/
+build/
+out/
+bin/
+
+# Gradle cache
+/.gradle/
+
+# Generated sources
+generated-sources/
+**/generated-sources/
+
+# Java / class files
+*.class
+
+# IntelliJ
+.idea/
+*.iml
+
+# VSCode
+.vscode/
+
+# Logs
+*.log
+
+# Environment / secrets
+.env
+.env.*
+*.key
+*.pem
+*.googleusercontent.com.json
+
+# H2 DB
+*.mv.db
+*.trace.db
+data/
+
+# OS
+.DS_Store
+Thumbs.db
