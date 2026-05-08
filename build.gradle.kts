@@ -25,11 +25,9 @@ repositories {
 dependencies {
     implementation(platform("org.springframework.cloud:spring-cloud-dependencies:2025.1.1"))
     implementation("org.springframework.cloud:spring-cloud-starter-gateway-server-webflux")
-    implementation("id.ac.ui.cs.advprog.yomu:shared-lib:0.0.1-SNAPSHOT") {
-        exclude(group = "org.springframework.boot", module = "spring-boot-starter-web")
-        exclude(group = "org.springframework.boot", module = "spring-boot-starter-security")
-        exclude(group = "org.springframework.boot", module = "spring-boot-starter-amqp")
-    }
+    implementation("io.jsonwebtoken:jjwt-api:0.12.6")
+    runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.6")
+    runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.6")
 
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")

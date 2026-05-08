@@ -1,6 +1,6 @@
 package id.ac.ui.cs.advprog.yomu.gateway.filter;
 
-import id.ac.ui.cs.advprog.yomu.shared.security.JwtService;
+import id.ac.ui.cs.advprog.yomu.gateway.security.JwtService;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
@@ -38,7 +38,7 @@ public class GatewayAuthFilter implements GlobalFilter, Ordered {
 
         String token = authHeader.substring(7);
         try {
-            if (!jwtService.isAccessTokenValid(token)) {
+            if (!jwtService.isTokenValid(token)) {
                 return onError(exchange, HttpStatus.UNAUTHORIZED);
             }
         } catch (Exception e) {
