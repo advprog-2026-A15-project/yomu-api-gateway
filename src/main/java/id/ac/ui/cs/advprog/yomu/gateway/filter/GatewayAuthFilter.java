@@ -1,6 +1,6 @@
 package id.ac.ui.cs.advprog.yomu.gateway.filter;
 
-import id.ac.ui.cs.advprog.yomu.shared.security.JwtService;
+import id.ac.ui.cs.advprog.yomu.gateway.security.JwtService;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
