@@ -5,6 +5,7 @@ import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
@@ -26,7 +27,7 @@ public class GatewayAuthFilter implements GlobalFilter, Ordered {
         ServerHttpRequest request = exchange.getRequest();
         String path = request.getURI().getPath();
 
-        if (path.startsWith("/api/auth/")) {
+        if (isPublicRequest(request)) {
             return chain.filter(exchange);
         }
 
@@ -37,7 +38,7 @@ public class GatewayAuthFilter implements GlobalFilter, Ordered {
 
         String token = authHeader.substring(7);
         try {
-            if (!jwtService.isTokenValid(token)) {
+            if (!jwtService.isAccessTokenValid(token)) {
                 return onError(exchange, HttpStatus.UNAUTHORIZED);
             }
         } catch (Exception e) {
@@ -56,5 +57,19 @@ public class GatewayAuthFilter implements GlobalFilter, Ordered {
     @Override
     public int getOrder() {
         return -1;
+    }
+
+    private boolean isPublicRequest(ServerHttpRequest request) {
+        String path = request.getURI().getPath();
+        HttpMethod method = request.getMethod();
+
+        if (HttpMethod.OPTIONS.equals(method) || path.startsWith("/api/auth/")) {
+            return true;
+        }
+
+        return HttpMethod.GET.equals(method)
+            && (path.startsWith("/api/learning/bacaan")
+                || path.startsWith("/api/forum/comments")
+                || path.startsWith("/api/clan/leaderboard"));
     }
 }
