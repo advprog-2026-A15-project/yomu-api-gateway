@@ -17,7 +17,8 @@ public class JwtService {
     @Value("${yomu.jwt.secret:404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970}")
     private String secretKey;
 
-    @Value("${yomu.jwt.expiration:86400000}") 
+    @Value("${yomu.jwt.expiration:86400000}")
+
     private long jwtExpiration;
 
     public boolean isTokenValid(String token) {

@@ -2,6 +2,7 @@ package id.ac.ui.cs.advprog.yomu.gateway;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication(excludeName = {
     "org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration",
@@ -15,6 +16,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
     "org.springframework.cloud.client.CommonsClientAutoConfiguration",
     "org.springframework.cloud.client.discovery.composite.CompositeDiscoveryClientAutoConfiguration",
     "org.springframework.cloud.client.serviceregistry.ServiceRegistryAutoConfiguration"
+})
+@ComponentScan(basePackages = {
+    "id.ac.ui.cs.advprog.yomu.gateway",
+    "id.ac.ui.cs.advprog.yomu.shared.security"
+
 })
 public class ApiGatewayApplication {
 
