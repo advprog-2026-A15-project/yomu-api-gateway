@@ -24,6 +24,8 @@ repositories {
 
 dependencies {
     implementation(platform("org.springframework.cloud:spring-cloud-dependencies:2025.1.1"))
+    implementation("id.ac.ui.cs.advprog.yomu:shared-lib:0.0.1-SNAPSHOT")
+    implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.cloud:spring-cloud-starter-gateway-server-webflux")
 
     implementation("io.jsonwebtoken:jjwt-api:0.12.6")
