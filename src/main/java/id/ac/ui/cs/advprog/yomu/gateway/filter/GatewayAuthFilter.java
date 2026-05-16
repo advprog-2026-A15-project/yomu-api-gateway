@@ -41,6 +41,21 @@ public class GatewayAuthFilter implements GlobalFilter, Ordered {
             if (!jwtService.isTokenValid(token)) {
                 return onError(exchange, HttpStatus.UNAUTHORIZED);
             }
+
+            // Extract info to propagate
+            String userId = jwtService.extractUserId(token);
+            String username = jwtService.extractUsername(token);
+            String role = jwtService.extractRole(token);
+
+            if (userId != null && username != null && role != null) {
+                ServerHttpRequest mutatedRequest = exchange.getRequest().mutate()
+                        .header("X-User-Id", userId)
+                        .header("X-User-Username", username)
+                        .header("X-User-Role", role)
+                        .build();
+                return chain.filter(exchange.mutate().request(mutatedRequest).build());
+            }
+
         } catch (Exception e) {
             return onError(exchange, HttpStatus.UNAUTHORIZED);
         }
@@ -63,7 +78,14 @@ public class GatewayAuthFilter implements GlobalFilter, Ordered {
         String path = request.getURI().getPath();
         HttpMethod method = request.getMethod();
 
-        if (HttpMethod.OPTIONS.equals(method) || path.startsWith("/api/auth/")) {
+        if (HttpMethod.OPTIONS.equals(method)) {
+            return true;
+        }
+
+        if (path.equals("/api/auth/register") || 
+            path.equals("/api/auth/login") || 
+            path.equals("/api/auth/google") || 
+            path.equals("/api/auth/refresh")) {
             return true;
         }
 
