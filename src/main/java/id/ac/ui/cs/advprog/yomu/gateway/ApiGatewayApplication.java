@@ -6,8 +6,7 @@ import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
 @ComponentScan(basePackages = {
-    "id.ac.ui.cs.advprog.yomu.gateway",
-    "id.ac.ui.cs.advprog.yomu.shared.security"
+    "id.ac.ui.cs.advprog.yomu.gateway"
 })
 public class ApiGatewayApplication {
 

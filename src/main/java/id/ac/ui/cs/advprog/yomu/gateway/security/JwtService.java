@@ -40,6 +40,14 @@ public class JwtService {
         return extractClaim(token, claims -> claims.get("id", String.class));
     }
 
+    public String extractTokenType(String token) {
+        return extractClaim(token, claims -> claims.get("type", String.class));
+    }
+
+    public boolean isAccessTokenValid(String token) {
+        return isTokenValid(token) && "access".equals(extractTokenType(token));
+    }
+
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);

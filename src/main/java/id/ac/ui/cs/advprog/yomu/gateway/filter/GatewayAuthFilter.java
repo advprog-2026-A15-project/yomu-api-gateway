@@ -38,7 +38,7 @@ public class GatewayAuthFilter implements GlobalFilter, Ordered {
 
         String token = authHeader.substring(7);
         try {
-            if (!jwtService.isTokenValid(token)) {
+            if (!jwtService.isAccessTokenValid(token)) {
                 return onError(exchange, HttpStatus.UNAUTHORIZED);
             }
         } catch (Exception e) {
@@ -68,8 +68,14 @@ public class GatewayAuthFilter implements GlobalFilter, Ordered {
         }
 
         return HttpMethod.GET.equals(method)
-            && (path.startsWith("/api/learning/bacaan")
+            && (isPublicLearningRequest(path)
                 || path.startsWith("/api/forum/comments")
                 || path.startsWith("/api/clan/leaderboard"));
+    }
+
+    private boolean isPublicLearningRequest(String path) {
+        return path.equals("/api/learning/bacaan")
+            || path.matches("^/api/learning/bacaan/[^/]+$")
+            || path.matches("^/api/learning/bacaan/[^/]+/questions$");
     }
 }

@@ -23,5 +23,5 @@ RUN --mount=type=cache,target=/root/.gradle,sharing=locked cd ./api-gateway && \
 FROM eclipse-temurin:21-jre-jammy
 WORKDIR /app
 COPY --from=build /app/api-gateway/build/libs/*.jar app.jar
-EXPOSE 8080
+EXPOSE 8090
 ENTRYPOINT ["java", "-jar", "app.jar"]
