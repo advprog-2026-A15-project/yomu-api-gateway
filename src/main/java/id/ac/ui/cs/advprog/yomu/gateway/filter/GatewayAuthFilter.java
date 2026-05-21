@@ -1,6 +1,8 @@
 package id.ac.ui.cs.advprog.yomu.gateway.filter;
 
-import id.ac.ui.cs.advprog.yomu.shared.security.JwtService;
+import id.ac.ui.cs.advprog.yomu.gateway.service.AuthClient;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
@@ -13,19 +15,16 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
+@Slf4j
 @Component
+@RequiredArgsConstructor
 public class GatewayAuthFilter implements GlobalFilter, Ordered {
 
-    private final JwtService jwtService;
-
-    public GatewayAuthFilter(JwtService jwtService) {
-        this.jwtService = jwtService;
-    }
+    private final AuthClient authClient;
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         ServerHttpRequest request = exchange.getRequest();
-        String path = request.getURI().getPath();
 
         if (isPublicRequest(request)) {
             return chain.filter(exchange);
@@ -37,30 +36,25 @@ public class GatewayAuthFilter implements GlobalFilter, Ordered {
         }
 
         String token = authHeader.substring(7);
-        try {
-            if (!jwtService.isAccessTokenValid(token)) {
-                return onError(exchange, HttpStatus.UNAUTHORIZED);
-            }
+        
+        return authClient.validateToken(token)
+                .flatMap(response -> {
+                    if (!response.getValid()) {
+                        return onError(exchange, HttpStatus.UNAUTHORIZED);
+                    }
 
-            // Extract info to propagate
-            String userId = jwtService.extractUserId(token);
-            String username = jwtService.extractUsername(token);
-            String role = jwtService.extractRole(token);
-
-            if (userId != null && username != null && role != null) {
-                ServerHttpRequest mutatedRequest = exchange.getRequest().mutate()
-                        .header("X-User-Id", userId)
-                        .header("X-User-Username", username)
-                        .header("X-User-Role", role)
-                        .build();
-                return chain.filter(exchange.mutate().request(mutatedRequest).build());
-            }
-
-        } catch (Exception e) {
-            return onError(exchange, HttpStatus.UNAUTHORIZED);
-        }
-
-        return chain.filter(exchange);
+                    ServerHttpRequest mutatedRequest = exchange.getRequest().mutate()
+                            .header("X-User-Id", response.getUserId())
+                            .header("X-User-Username", response.getUsername())
+                            .header("X-User-Role", response.getRole())
+                            .build();
+                    
+                    return chain.filter(exchange.mutate().request(mutatedRequest).build());
+                })
+                .onErrorResume(e -> {
+                    log.error("Error validating token via gRPC", e);
+                    return onError(exchange, HttpStatus.UNAUTHORIZED);
+                });
     }
 
     private Mono<Void> onError(ServerWebExchange exchange, HttpStatus httpStatus) {
@@ -82,9 +76,9 @@ public class GatewayAuthFilter implements GlobalFilter, Ordered {
             return true;
         }
 
-        if (path.equals("/api/auth/register") || 
-            path.equals("/api/auth/login") || 
-            path.equals("/api/auth/google") || 
+        if (path.equals("/api/auth/register") ||
+            path.equals("/api/auth/login") ||
+            path.equals("/api/auth/google") ||
             path.equals("/api/auth/refresh")) {
             return true;
         }

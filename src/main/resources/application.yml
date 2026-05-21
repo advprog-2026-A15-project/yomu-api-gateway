@@ -32,6 +32,27 @@ spring:
               predicates:
                 - Path=/api/forum/**
 
+grpc:
+  client:
+    service-auth:
+      address: 'static://localhost:9091'
+      negotiationType: plaintext
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus,metrics
+  endpoint:
+    metrics:
+      enabled: true
+    prometheus:
+      enabled: true
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+
 ---
 spring:
   config:
@@ -62,3 +83,8 @@ spring:
               uri: http://service-forum:8084
               predicates:
                 - Path=/api/forum/**
+  grpc:
+    client:
+      service-auth:
+        address: 'static://service-auth:9091'
+        negotiationType: plaintext

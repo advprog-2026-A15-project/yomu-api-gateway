@@ -25,13 +25,9 @@ import org.springframework.context.annotation.ComponentScan;
 })
 public class ApiGatewayApplication {
 
-    @org.springframework.context.annotation.Bean
-    public id.ac.ui.cs.advprog.yomu.shared.security.JwtService jwtService() {
-        return new id.ac.ui.cs.advprog.yomu.shared.security.JwtService();
-    }
-
     public static void main(String[] args) {
         SpringApplication.run(ApiGatewayApplication.class, args);
     }
 
 }
+
