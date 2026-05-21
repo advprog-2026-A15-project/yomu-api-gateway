@@ -83,8 +83,8 @@ spring:
               uri: http://service-forum:8084
               predicates:
                 - Path=/api/forum/**
-  grpc:
-    client:
-      service-auth:
-        address: 'static://service-auth:9091'
-        negotiationType: plaintext
+grpc:
+  client:
+    service-auth:
+      address: 'static://service-auth:9091'
+      negotiationType: plaintext
