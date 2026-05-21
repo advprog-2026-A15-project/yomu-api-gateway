@@ -31,6 +31,10 @@ spring:
               uri: http://localhost:8084
               predicates:
                 - Path=/api/forum/**
+            - id: service-notification
+              uri: http://localhost:8086
+              predicates:
+                - Path=/api/notifications/**
 
 grpc:
   client:
@@ -83,6 +87,10 @@ spring:
               uri: http://service-forum:8084
               predicates:
                 - Path=/api/forum/**
+            - id: service-notification
+              uri: http://service-notification:8086
+              predicates:
+                - Path=/api/notifications/**
 grpc:
   client:
     service-auth:
