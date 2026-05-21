@@ -15,14 +15,20 @@ import org.springframework.context.annotation.ComponentScan;
     "org.springframework.cloud.client.loadbalancer.LoadBalancerAutoConfiguration",
     "org.springframework.cloud.client.CommonsClientAutoConfiguration",
     "org.springframework.cloud.client.discovery.composite.CompositeDiscoveryClientAutoConfiguration",
-    "org.springframework.cloud.client.serviceregistry.ServiceRegistryAutoConfiguration"
+    "org.springframework.cloud.client.serviceregistry.ServiceRegistryAutoConfiguration",
+    "org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration",
+    "org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration",
+    "id.ac.ui.cs.advprog.yomu.shared.config.SharedSecurityConfig"
 })
 @ComponentScan(basePackages = {
-    "id.ac.ui.cs.advprog.yomu.gateway",
-    "id.ac.ui.cs.advprog.yomu.shared.security"
-
+    "id.ac.ui.cs.advprog.yomu.gateway"
 })
 public class ApiGatewayApplication {
+
+    @org.springframework.context.annotation.Bean
+    public id.ac.ui.cs.advprog.yomu.shared.security.JwtService jwtService() {
+        return new id.ac.ui.cs.advprog.yomu.shared.security.JwtService();
+    }
 
     public static void main(String[] args) {
         SpringApplication.run(ApiGatewayApplication.class, args);
