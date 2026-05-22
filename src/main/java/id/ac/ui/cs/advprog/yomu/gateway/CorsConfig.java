@@ -19,7 +19,9 @@ public class CorsConfig {
             "http://localhost:5173",
             "http://127.0.0.1:5173",
             "http://yomu-infra.duckdns.org",
-            "https://yomu-infra.duckdns.org"
+            "https://yomu-infra.duckdns.org",
+            "http://marbling-level-babbling.ngrok-free.dev",
+            "https://marbling-level-babbling.ngrok-free.dev"
         ));
         corsConfig.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD"));
         corsConfig.setAllowedHeaders(List.of("*"));
