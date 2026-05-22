@@ -21,7 +21,9 @@ public class CorsConfig {
             "http://yomu-infra.duckdns.org",
             "https://yomu-infra.duckdns.org",
             "http://marbling-level-babbling.ngrok-free.dev",
-            "https://marbling-level-babbling.ngrok-free.dev"
+            "https://marbling-level-babbling.ngrok-free.dev",
+            "http://18.232.133.58",
+            "https://18.232.133.58"
         ));
         corsConfig.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD"));
         corsConfig.setAllowedHeaders(List.of("*"));
