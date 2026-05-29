@@ -1,6 +1,6 @@
 package id.ac.ui.cs.advprog.yomu.gateway.filter;
 
-import id.ac.ui.cs.advprog.yomu.gateway.service.AuthClient;
+import id.ac.ui.cs.advprog.yomu.shared.security.JwtService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
@@ -20,7 +20,7 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class GatewayAuthFilter implements GlobalFilter, Ordered {
 
-    private final AuthClient authClient;
+    private final JwtService jwtService;
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
@@ -36,25 +36,32 @@ public class GatewayAuthFilter implements GlobalFilter, Ordered {
         }
 
         String token = authHeader.substring(7);
-        
-        return authClient.validateToken(token)
-                .flatMap(response -> {
-                    if (!response.getValid()) {
-                        return onError(exchange, HttpStatus.UNAUTHORIZED);
-                    }
 
-                    ServerHttpRequest mutatedRequest = exchange.getRequest().mutate()
-                            .header("X-User-Id", response.getUserId())
-                            .header("X-User-Username", response.getUsername())
-                            .header("X-User-Role", response.getRole())
-                            .build();
-                    
-                    return chain.filter(exchange.mutate().request(mutatedRequest).build());
-                })
-                .onErrorResume(e -> {
-                    log.error("Error validating token via gRPC", e);
-                    return onError(exchange, HttpStatus.UNAUTHORIZED);
-                });
+        try {
+            if (!jwtService.isAccessTokenValid(token)) {
+                return onError(exchange, HttpStatus.UNAUTHORIZED);
+            }
+
+            String userId   = jwtService.extractUserId(token);
+            String username = jwtService.extractUsername(token);
+            String role     = jwtService.extractRole(token);
+
+            if (userId == null || username == null || role == null) {
+                return onError(exchange, HttpStatus.UNAUTHORIZED);
+            }
+
+            ServerHttpRequest mutatedRequest = exchange.getRequest().mutate()
+                    .header("X-User-Id", userId)
+                    .header("X-User-Username", username)
+                    .header("X-User-Role", role)
+                    .build();
+
+            return chain.filter(exchange.mutate().request(mutatedRequest).build());
+
+        } catch (Exception e) {
+            log.warn("JWT validation failed: {}", e.getMessage());
+            return onError(exchange, HttpStatus.UNAUTHORIZED);
+        }
     }
 
     private Mono<Void> onError(ServerWebExchange exchange, HttpStatus httpStatus) {
