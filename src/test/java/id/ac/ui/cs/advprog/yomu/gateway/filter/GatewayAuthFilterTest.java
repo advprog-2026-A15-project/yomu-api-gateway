@@ -1,7 +1,6 @@
 package id.ac.ui.cs.advprog.yomu.gateway.filter;
 
-import id.ac.ui.cs.advprog.yomu.shared.grpc.ValidateTokenResponse;
-import id.ac.ui.cs.advprog.yomu.gateway.service.AuthClient;
+import id.ac.ui.cs.advprog.yomu.shared.security.JwtService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,7 +25,7 @@ import static org.mockito.Mockito.*;
 class GatewayAuthFilterTest {
 
     @Mock
-    private AuthClient authClient;
+    private JwtService jwtService;
 
     @Mock
     private GatewayFilterChain filterChain;
@@ -35,7 +34,7 @@ class GatewayAuthFilterTest {
 
     @BeforeEach
     void setUp() {
-        gatewayAuthFilter = new GatewayAuthFilter(authClient);
+        gatewayAuthFilter = new GatewayAuthFilter(jwtService);
     }
 
     @Test
@@ -53,7 +52,7 @@ class GatewayAuthFilterTest {
         Mono<Void> result = gatewayAuthFilter.filter(exchange, filterChain);
 
         StepVerifier.create(result).verifyComplete();
-        verifyNoInteractions(authClient);
+        verifyNoInteractions(jwtService);
     }
 
     @Test
@@ -66,7 +65,7 @@ class GatewayAuthFilterTest {
         Mono<Void> result = gatewayAuthFilter.filter(exchange, filterChain);
 
         StepVerifier.create(result).verifyComplete();
-        verifyNoInteractions(authClient);
+        verifyNoInteractions(jwtService);
     }
 
     @Test
@@ -79,7 +78,7 @@ class GatewayAuthFilterTest {
         Mono<Void> result = gatewayAuthFilter.filter(exchange, filterChain);
 
         StepVerifier.create(result).verifyComplete();
-        verifyNoInteractions(authClient);
+        verifyNoInteractions(jwtService);
     }
 
     @Test
@@ -92,7 +91,7 @@ class GatewayAuthFilterTest {
         Mono<Void> result = gatewayAuthFilter.filter(exchange, filterChain);
 
         StepVerifier.create(result).verifyComplete();
-        verifyNoInteractions(authClient);
+        verifyNoInteractions(jwtService);
     }
 
     @Test
@@ -104,7 +103,7 @@ class GatewayAuthFilterTest {
 
         StepVerifier.create(result).verifyComplete();
         assertEquals(HttpStatus.UNAUTHORIZED, exchange.getResponse().getStatusCode());
-        verifyNoInteractions(authClient);
+        verifyNoInteractions(jwtService);
     }
 
     @Test
@@ -118,7 +117,7 @@ class GatewayAuthFilterTest {
 
         StepVerifier.create(result).verifyComplete();
         assertEquals(HttpStatus.UNAUTHORIZED, exchange.getResponse().getStatusCode());
-        verifyNoInteractions(authClient);
+        verifyNoInteractions(jwtService);
     }
 
     @Test
@@ -128,11 +127,7 @@ class GatewayAuthFilterTest {
                 .build();
         ServerWebExchange exchange = MockServerWebExchange.from(request);
 
-        ValidateTokenResponse response = ValidateTokenResponse.newBuilder()
-                .setValid(false)
-                .build();
-
-        when(authClient.validateToken("invalid-token")).thenReturn(Mono.just(response));
+        when(jwtService.isAccessTokenValid("invalid-token")).thenReturn(false);
 
         Mono<Void> result = gatewayAuthFilter.filter(exchange, filterChain);
 
@@ -147,7 +142,7 @@ class GatewayAuthFilterTest {
                 .build();
         ServerWebExchange exchange = MockServerWebExchange.from(request);
 
-        when(authClient.validateToken("error-token")).thenReturn(Mono.error(new RuntimeException("gRPC error")));
+        when(jwtService.isAccessTokenValid("error-token")).thenThrow(new RuntimeException("JWT error"));
 
         Mono<Void> result = gatewayAuthFilter.filter(exchange, filterChain);
 
@@ -162,14 +157,10 @@ class GatewayAuthFilterTest {
                 .build();
         ServerWebExchange exchange = MockServerWebExchange.from(request);
 
-        ValidateTokenResponse response = ValidateTokenResponse.newBuilder()
-                .setValid(true)
-                .setUserId("user-123")
-                .setUsername("testuser")
-                .setRole("USER")
-                .build();
-
-        when(authClient.validateToken("valid-token")).thenReturn(Mono.just(response));
+        when(jwtService.isAccessTokenValid("valid-token")).thenReturn(true);
+        when(jwtService.extractUserId("valid-token")).thenReturn("user-123");
+        when(jwtService.extractUsername("valid-token")).thenReturn("testuser");
+        when(jwtService.extractRole("valid-token")).thenReturn("USER");
         when(filterChain.filter(any(ServerWebExchange.class))).thenReturn(Mono.empty());
 
         Mono<Void> result = gatewayAuthFilter.filter(exchange, filterChain);
