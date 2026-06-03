@@ -23,27 +23,35 @@ repositories {
     }
 }
 
+val grpcVersion = "1.63.0"
+val grpcClientVersion = "3.1.0.RELEASE"
+val jjwtVersion = "0.12.6"
+val sharedLibVersion = "0.0.1-SNAPSHOT"
 
 dependencies {
     implementation(platform("org.springframework.cloud:spring-cloud-dependencies:2025.1.1"))
-    implementation("id.ac.ui.cs.advprog.yomu:shared-lib:0.0.1-SNAPSHOT")
+    implementation("id.ac.ui.cs.advprog.yomu:shared-lib:${sharedLibVersion}")
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.cloud:spring-cloud-starter-gateway-server-webflux")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("io.micrometer:micrometer-registry-prometheus")
 
     // gRPC
-    implementation("io.grpc:grpc-netty:1.63.0")
-    implementation("net.devh:grpc-client-spring-boot-starter:3.1.0.RELEASE")
+    implementation("io.grpc:grpc-netty:${grpcVersion}")
+    implementation("net.devh:grpc-client-spring-boot-starter:${grpcClientVersion}")
 
-    implementation("io.jsonwebtoken:jjwt-api:0.12.6")
-    runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.6")
-    runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.6")
+    implementation("io.jsonwebtoken:jjwt-api:${jjwtVersion}")
+    runtimeOnly("io.jsonwebtoken:jjwt-impl:${jjwtVersion}")
+    runtimeOnly("io.jsonwebtoken:jjwt-jackson:${jjwtVersion}")
 
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("io.projectreactor:reactor-test")
+}
+
+dependencyLocking {
+    lockAllConfigurations()
 }
 
 tasks.withType<Test> {

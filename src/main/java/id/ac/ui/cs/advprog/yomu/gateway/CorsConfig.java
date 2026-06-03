@@ -10,7 +10,9 @@ import java.util.Arrays;
 import java.util.List;
 
 @Configuration
+@SuppressWarnings("java:S1313")
 public class CorsConfig {
+
 
     @Bean
     public CorsWebFilter corsWebFilter() {
