@@ -28,7 +28,18 @@ public class CorsConfig {
             "https://18.232.133.58"
         ));
         corsConfig.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD"));
-        corsConfig.setAllowedHeaders(List.of("*"));
+        corsConfig.setAllowedHeaders(List.of(
+            "Accept",
+            "Authorization",
+            "Cache-Control",
+            "Content-Type",
+            "Last-Event-ID",
+            "ngrok-skip-browser-warning",
+            "Origin",
+            "Pragma",
+            "X-Requested-With"
+        ));
+        corsConfig.setExposedHeaders(List.of("Authorization"));
         corsConfig.setAllowCredentials(true);
         corsConfig.setMaxAge(3600L);
 
